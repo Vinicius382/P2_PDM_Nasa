@@ -26,19 +26,19 @@ export default function ImagemDia({date, url}: Props) {
     return (
     <View style={styles.card}>
         <Image source={ {uri: url }} style={styles.imagem} />
-        <Text style={styles.texto}>Foto do dia: {formatarData(date)}</Text> 
+        <Text style={styles.texto}>{formatarData(date)}</Text> 
     </View>
   )
 }
 
 const styles = StyleSheet.create({
     card: {
-        width: 100,
+        width: 160,
         marginRight: 12,
         alignItems: 'center',
     },
     imagem: {
-        width: 80,
+        width: 150,
         height: 80,
         borderRadius: 8,
         backgroundColor: '#ddd',
@@ -47,5 +47,6 @@ const styles = StyleSheet.create({
         marginTop: 4,
         fontSize: 12,
         color: '#333',
+        textAlign: 'center',
     },
 })

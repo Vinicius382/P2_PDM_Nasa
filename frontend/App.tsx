@@ -5,8 +5,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import axios from 'axios';
-import ImagemDia from './componentes/ImagemDia';
+import ImagemDia from './componentes/ImagemDia'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { api, STORAGE_KEY } from './utils/config';
 
 interface FotoDoDia {
   date: string;
@@ -26,8 +27,6 @@ interface State {
   carregando: boolean;
 }
 
-const back_url = 'http://localhost:3000'
-
 export default class App extends Component<{}, State> {
 
   state: State = {
@@ -40,14 +39,28 @@ export default class App extends Component<{}, State> {
     this.buscarFotosDoDia()  
 }
 
+  salvarFotos = async (fotos: FotoDoDia[]) => {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(fotos))
+  }
+
+  carregarFotos = async () => {
+    const dados = await AsyncStorage.getItem(STORAGE_KEY)
+      if (dados) {
+        return JSON.parse(dados) as FotoDoDia[]
+      }
+      return []
+  }
+
 buscarFotosDoDia = async () => {
   this.setState({ carregando: true })
 
-  const response = await axios.get(`${back_url}/imagem-dia`)
+  const fotosSalvas = await this.carregarFotos()
+
+  const response = await api.get(`/imagem-dia`)
   const foto = response.data
 
   const verificarExistencia = () => {
-    for (const item of this.state.fotosDoDia) {
+    for (const item of fotosSalvas) {
       if (item.date === foto.date) {
         return true
       }
@@ -57,22 +70,26 @@ buscarFotosDoDia = async () => {
 
   const jaExiste = verificarExistencia()
   if (!jaExiste && foto.media_type === 'image') {
+    const novaLista = [
+      { date: foto.date, 
+        title: foto.title, 
+        url: foto.url
+      },
+      ...fotosSalvas,
+    ]
+    await this.salvarFotos(novaLista)
+
     this.setState({
-      fotosDoDia: [
-        {
-          date: foto.date,
-          title: foto.title,
-          url: foto.url
-        },
-        ...this.state.fotosDoDia,
-      ],
-    });
+      fotosDoDia: novaLista,
+      carregando: false,
+    })
+  } else {
+    this.setState({
+      fotosDoDia: fotosSalvas,
+      carregando: false,
+    })
   }
-
-  this.setState({ carregando: false })
 }
-
-
 
 render () {
   const { fotosDoDia, carregando } = this.state
