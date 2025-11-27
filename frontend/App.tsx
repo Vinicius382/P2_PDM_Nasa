@@ -1,10 +1,11 @@
+import React, { Component } from 'react'
 import {
   FlatList,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { useState } from 'react'
+import axios from 'axios';
 import ImagemDia from './componentes/ImagemDia';
 
 interface FotoDoDia {
@@ -19,47 +20,101 @@ interface ResultadoBusca {
   urlImagem: string;
 }
 
-export default function App() {
-  const [fotosDoDia, setFotosDoDia] = useState<FotoDoDia[]>([])
-  const [resultados, setResultados] = useState<ResultadoBusca[]>([])
-
-  return (
-    <View style={styles.container}>
-
-      <Text style={styles.titulo}>Fotos do dia</Text>
-      <View style={styles.fotosDoDiaContainer}>
-        {fotosDoDia.length === 0 ? (
-        <Text style={styles.placeholder}>Nenhuma foto do dia no momento</Text>
-        ) : (
-          <FlatList
-            data={fotosDoDia}
-            horizontal
-            keyExtractor={(item) => item.date}
-            ItemSeparatorComponent={() => <View style={{ width:10 }} />}
-            renderItem={({item}) => (
-              <ImagemDia
-                date={item.date}
-                url={item.url}
-              />
-            )}
-          />
-        )}
-      </View>
-
-      <View style={styles.buscaContainer}>
-        <Text style={styles.placeholder}>Componente de busca</Text>
-      </View>
-
-      <View style={styles.resultadosContainer}>
-          <Text style={styles.placeholder}>Resultados da busca</Text>
-      </View>
-
-      <View style={styles.footer}>
-        <Text style={styles. placeholder}>Footer</Text>
-      </View>
-    </View>
-  )
+interface State {
+  fotosDoDia: FotoDoDia[];
+  resultados: ResultadoBusca[];
+  carregando: boolean;
 }
+
+const back_url = 'http://localhost:3000'
+
+export default class App extends Component<{}, State> {
+
+  state: State = {
+    fotosDoDia: [],
+    resultados: [],
+    carregando: false,
+  }
+
+  componentDidMount() { 
+    this.buscarFotosDoDia()  
+}
+
+buscarFotosDoDia = async () => {
+  this.setState({ carregando: true })
+
+  const response = await axios.get(`${back_url}/imagem-dia`)
+  const foto = response.data
+
+  const verificarExistencia = () => {
+    for (const item of this.state.fotosDoDia) {
+      if (item.date === foto.date) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const jaExiste = verificarExistencia()
+  if (!jaExiste && foto.media_type === 'image') {
+    this.setState({
+      fotosDoDia: [
+        {
+          date: foto.date,
+          title: foto.title,
+          url: foto.url
+        },
+        ...this.state.fotosDoDia,
+      ],
+    });
+  }
+
+  this.setState({ carregando: false })
+}
+
+
+
+render () {
+  const { fotosDoDia, carregando } = this.state
+  return (
+  <View style={styles.container}>
+
+    <Text style={styles.titulo}>Fotos do dia</Text>
+    <View style={styles.fotosDoDiaContainer}>
+      {fotosDoDia.length === 0 ? (
+        <Text style={styles.placeholder}>Nenhuma foto do dia no momento</Text>
+      ) : (
+        <FlatList
+          data={fotosDoDia}
+          horizontal
+          keyExtractor={(item) => item.date}
+          ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+          renderItem={({ item }) => (
+            <ImagemDia
+              date={item.date}
+              url={item.url}
+            />
+          )}
+        />
+      )}
+    </View>
+
+    <View style={styles.buscaContainer}>
+      <Text style={styles.placeholder}>Componente de busca</Text>
+    </View>
+
+    <View style={styles.resultadosContainer}>
+      <Text style={styles.placeholder}>Resultados da busca</Text>
+    </View>
+
+    <View style={styles.footer}>
+      <Text style={styles.placeholder}>Footer</Text>
+    </View>
+  </View>
+)
+}
+}
+
 
 const styles = StyleSheet.create({
   container: {
