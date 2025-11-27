@@ -5,6 +5,7 @@ import {
   View,
 } from 'react-native';
 import { useState } from 'react'
+import ImagemDia from './componentes/ImagemDia';
 
 interface FotoDoDia {
   date: string;
@@ -26,8 +27,23 @@ export default function App() {
     <View style={styles.container}>
 
       <Text style={styles.titulo}>Fotos do dia</Text>
-      <View style={styles. fotosDoDiaContainer}>
-        <Text style={styles.placeholder}>Fotos do dia</Text>
+      <View style={styles.fotosDoDiaContainer}>
+        {fotosDoDia.length === 0 ? (
+        <Text style={styles.placeholder}>Nenhuma foto do dia no momento</Text>
+        ) : (
+          <FlatList
+            data={fotosDoDia}
+            horizontal
+            keyExtractor={(item) => item.date}
+            ItemSeparatorComponent={() => <View style={{ width:10 }} />}
+            renderItem={({item}) => (
+              <ImagemDia
+                date={item.date}
+                url={item.url}
+              />
+            )}
+          />
+        )}
       </View>
 
       <View style={styles.buscaContainer}>
@@ -65,6 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 8,
+    paddingVertical: 12,
   },
   buscaContainer: {
     marginTop: 16,
