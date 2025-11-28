@@ -27,7 +27,11 @@ export default class ImagemDia extends React.Component<{}, State> {
     }
 
     componentDidMount() {
-        this.carregarFotos()
+        this.iniciarApp()
+    }
+
+    iniciarApp = async () => {
+        await this.carregarFotos()
         this.buscarFotosDoDia()
     }
 
