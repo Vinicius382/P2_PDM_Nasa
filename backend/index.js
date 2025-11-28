@@ -29,7 +29,8 @@ app.get('/buscar', async (req, res) => {
             year_start: req.query.ano,
             year_end: req.query.ano,
             media_type: 'image',
-            page_size: 10         }
+            page_size: 10
+        }
     })
 
     const items = response.data.collection.items

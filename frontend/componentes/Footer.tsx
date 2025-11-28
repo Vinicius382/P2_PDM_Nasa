@@ -39,41 +39,44 @@ const desenvolveres = [
 export default function Footer() {
     return (
         <View style={styles.container}>
-        <Text style={styles.tituloFooter}>Desenvolvido por:</Text>
+            <Text style={styles.tituloFooter}>Desenvolvido por:</Text>
 
-        <View style={styles.listaDesenvolvedores}>
-            {desenvolveres.map((dev) => (
-                <View key={dev.id} style={styles.card}>
-                    <View style={styles.iconePerfil}>
-                        <Anticon name='user' size={36} color='#000000ff' />
-                    </View>
-                    <Text style={styles.nome}>{dev.nome}</Text>
+            <View style={styles.listaDesenvolvedores}>
+                {desenvolveres.map((dev) => (
+                    <View key={dev.id} style={styles.card}>
+                        <View style={styles.iconePerfil}>
+                            <Anticon name='user' size={36} color='#424242ff' />
+                        </View>
+                        <Text style={styles.nome}>{dev.nome}</Text>
 
-                    <View style={styles.redesSociais}>
-                        {dev.linkedin && (
-                            <Pressable onPress={() => Linking.openURL(dev.linkedin)}>
-                                <Anticon name='linkedin' size={32} color='#0A66C2' />
-                            </Pressable>
-                        )}
-                        {dev.github && (
-                            <Pressable onPress={() => Linking.openURL(dev.github)}>
-                                <Anticon name='github' size={32} color='#000' />
-                            </Pressable>
-                        )}
+                        <View style={styles.redesSociais}>
+                            {dev.linkedin && (
+                                <Pressable onPress={() => Linking.openURL(dev.linkedin)}>
+                                    <Anticon name='linkedin' size={32} color='#0A66C2' />
+                                </Pressable>
+                            )}
+                            {dev.github && (
+                                <Pressable onPress={() => Linking.openURL(dev.github)}>
+                                    <Anticon name='github' size={32} color='#000' />
+                                </Pressable>
+                            )}
+                        </View>
                     </View>
-                </View>
-            ))}
+                ))}
+            </View>
         </View>
-    </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        backgroundColor: '#f9f9f9',
         alignItems: 'center',
         width: '100%',
+        marginTop: 10,
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: '#ddd',
     },
     tituloFooter: {
         fontSize: 14,
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
-        backgroundColor: '#ccc',
+        backgroundColor: '#dbdbdbff',
     },
     nome: {
         fontSize: 14,
