@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { api, STORAGE_KEY } from './utils/config';
 import BuscaImagens from './componentes/BuscaImagens';
 import ResultadoBusca from './componentes/ResultadoBusca';
+import Footer from './componentes/Footer';
 
 interface FotoDoDia {
   date: string
@@ -158,8 +159,8 @@ render () {
       )}
     </View>
 
-    <View style={styles.footer}>
-      <Text style={styles.placeholder}>Footer</Text>
+    <View>
+      <Footer />
     </View>
   </View>
 )
@@ -199,15 +200,6 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
-  },
-  footer: {
-    height: 100,
-    marginTop: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   placeholder: {
     color: '#999',
