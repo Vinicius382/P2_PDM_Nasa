@@ -8,23 +8,26 @@ import {
 import ImagemDia from './componentes/ImagemDia'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { api, STORAGE_KEY } from './utils/config';
+import BuscaImagens from './componentes/BuscaImagens';
+import ResultadoBusca from './componentes/ResultadoBusca';
 
 interface FotoDoDia {
-  date: string;
-  title: string;
-  url: string;
+  date: string
+  title: string
+  url: string
 }
 
 interface ResultadoBusca {
-  titulo: string;
-  descricao: string;
-  urlImagem: string;
+  titulo: string
+  descricao: string
+  urlImagem: string
 }
 
 interface State {
-  fotosDoDia: FotoDoDia[];
-  resultados: ResultadoBusca[];
-  carregando: boolean;
+  fotosDoDia: FotoDoDia[]
+  resultados: ResultadoBusca[]
+  carregando: boolean
+  buscando: boolean
 }
 
 export default class App extends Component<{}, State> {
@@ -33,6 +36,7 @@ export default class App extends Component<{}, State> {
     fotosDoDia: [],
     resultados: [],
     carregando: false,
+    buscando: false,
   }
 
   componentDidMount() { 
@@ -91,8 +95,20 @@ buscarFotosDoDia = async () => {
   }
 }
 
+buscarImagens = async (termo: string, ano: number) => {
+  this.setState({ buscando:true })
+
+  const response = await api.get(`/buscar?termo=${termo}&ano=${ano}`)
+
+  this.setState({
+    resultados: response.data,
+    buscando: false
+  })
+}
+
+
 render () {
-  const { fotosDoDia, carregando } = this.state
+  const { fotosDoDia, resultados, carregando, buscando } = this.state
   return (
   <View style={styles.container}>
 
@@ -117,11 +133,29 @@ render () {
     </View>
 
     <View style={styles.buscaContainer}>
-      <Text style={styles.placeholder}>Componente de busca</Text>
+      <BuscaImagens aoBuscar={this.buscarImagens} />
     </View>
 
     <View style={styles.resultadosContainer}>
-      <Text style={styles.placeholder}>Resultados da busca</Text>
+      {buscando ? (
+        <Text style={styles.placeholder}>Buscando....</Text>
+      ): resultados.length === 0 ? (
+        <Text style={styles.placeholder}>
+          Digite o que procura e selecione um ano para filtrar
+        </Text>
+      ) : (
+        <FlatList
+          data={resultados}
+          keyExtractor={(item, indice) => indice.toString()}
+          renderItem={({ item }) => (
+            <ResultadoBusca 
+              titulo={item.titulo}
+              descricao={item.descricao}
+              url={item.urlImagem}
+              />
+          )}
+          />
+      )}
     </View>
 
     <View style={styles.footer}>
@@ -137,16 +171,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingVertical: 40,
+    paddingVertical: 4,
     paddingHorizontal: 16,
+    maxWidth: 700,
+    marginInline: 'auto',
   },
   titulo: {
-    fontSize: 28,
-    marginTop: 10,
-    marginBottom: 10,
+    fontSize: 20,
   },
   fotosDoDiaContainer: {
-    height: 130,
+    height: 140,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
@@ -156,11 +190,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   buscaContainer: {
-    marginTop: 16,
+    marginTop: 5,
   },
   resultadosContainer: {
     flex: 1,
-    marginTop: 16,
+    marginTop: 6,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
